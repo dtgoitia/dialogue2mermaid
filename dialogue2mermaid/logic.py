@@ -1,7 +1,5 @@
 def pretty_var(token: any) -> any:
-    if type(token) is dict:
-        return token.get('var')
-    return token
+    return token.get('var') if type(token) == dict else token
 
 
 def beautified_decision_node(node: dict) -> str:
@@ -14,25 +12,29 @@ def beautified_decision_node(node: dict) -> str:
 
 def beautified_operation_node(node: dict) -> str:
     operation = node['operation']
+    result = ''
 
-    # running methods
+    if 'output' in node:
+        result = f"{node['output']} = "
+
     if 'method' in operation:
         method = operation['method']
         method_name = method[1]
-
         if method_name in ('addItem', 'getItem', 'updateItem'):
-            src = method[0]['var']
-            i = method[2][0]
-            i = i.get('var') if type(i) == dict else i
-            return f"{src}.{method_name}({i})"
-        return str(operation['unrecognised method'])
-
-    # defining a variable
+            var = pretty_var(method[0])
+            i = pretty_var(method[2][0])
+            result += f"{var}.{method_name}({i})"
+        else:
+            str(operation['unrecognised method'])
     elif 'var' in operation:
-        return f"{node['output']} = {operation['var']}"
+        result += f"{operation['var']}"
+    else:
+        plugin_name = list(operation.keys())[0]
+        p = [str(pretty_var(item)) for item in operation[plugin_name]]
+        p = ', '.join(p)
+        result += f"{plugin_name}({p})"
 
-    # default
-    return ''
+    return result
 
 
 def beautify_nodes(nodes: list) -> list:
