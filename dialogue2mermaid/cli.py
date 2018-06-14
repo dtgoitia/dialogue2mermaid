@@ -88,6 +88,29 @@ def link_nodes(nodes: list) -> str:
     return nodes
 
 
+def beautified_operation_node(node: dict) -> str:
+    operation = node['operation']
+
+    # running methods
+    if 'method' in operation:
+        method = operation['method']
+        method_name = method[1]
+
+        if method_name in ('addItem', 'getItem', 'updateItem'):
+            src = method[0]['var']
+            i = method[2][0]
+            i = i.get('var') if type(i) == dict else i
+            return f"{src}.{method_name}({i})"
+        return str(operation['unrecognised method'])
+
+    # defining a variable
+    elif 'var' in operation:
+        return f"{node['output']} = {operation['var']}"
+
+    # default
+    return ''
+
+
 def beautify_nodes(nodes: list) -> list:
     """
     Customize each node content and return all nodes.
@@ -98,7 +121,7 @@ def beautify_nodes(nodes: list) -> list:
         if node_type == 'message':
             node.update({'content': 'print'})
         elif node_type == 'operation':
-            node.update({'content': 'operation'})
+            node.update({'content': beautified_operation_node(node)})
         elif node_type == 'action':
             node.update({'content': 'action'})
         elif node_type == 'decision':
