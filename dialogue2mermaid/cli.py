@@ -115,7 +115,20 @@ def beautify_nodes(nodes: list) -> list:
 
 
 def stringify_nodes(nodes: list) -> list:
-    return nodes
+    """
+    Convert node data to Mermaid syntax
+    """
+    result = ""
+    for node in nodes:
+        i = node['index']
+        if 'label' in node:
+            label = f"{i} @ {node['label']}, {node['type']}"
+        else:
+            label = f"{i} @ {node['type']}"
+        content = node['content']
+        ref = f"{node['index']} --> {node['next']}"
+        result += f"{i}[\"{label} <br> {content}\"]\n{ref}\n"
+    return result
 
 
 def nodes_to_mermaid(nodes: list) -> str:
@@ -125,9 +138,16 @@ def nodes_to_mermaid(nodes: list) -> str:
     return stringified_nodes
 
 
+def write_to_markdown(mermaid: str):
+    with open('output.md', 'w') as file:
+        file.write('```mermaid {align="center"}\ngraph TB\n')
+        file.write(mermaid)
+        file.write('```')
+
+
 def main():
     dialogue_path = 'test.jsonc'
     dialogue = load_dialogue(dialogue_path)
     nodes = get_dialogue_nodes(dialogue)
     mermaid = nodes_to_mermaid(nodes)
-    print(mermaid)
+    write_to_markdown(mermaid)
