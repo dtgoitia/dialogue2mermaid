@@ -126,7 +126,6 @@ def stringify_nodes(nodes: list) -> list:
     """
     Convert node data to Mermaid syntax
     """
-    # TODO: sort end nodes not to point to a "-1" node
     result = ""
     for node in nodes:
         i = node['index']
@@ -150,7 +149,8 @@ def write_to_markdown(mermaid: str):
     with open('output.md', 'w') as file:
         file.write('```mermaid {align="center"}\ngraph TB\n')
         file.write(mermaid)
-        file.write('```')
+        file.write('-1((END))\n')
+        file.write('```\n')
 
 
 def main():
