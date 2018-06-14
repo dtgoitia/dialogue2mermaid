@@ -1,1 +1,5 @@
 /my-app/
+*.egg-info/
+*.jsonc
+*.json
+/output.md
