@@ -88,6 +88,20 @@ def link_nodes(nodes: list) -> str:
     return nodes
 
 
+def pretty_var(token: any) -> any:
+    if type(token) is dict:
+        return token.get('var')
+    return token
+
+
+def beautified_decision_node(node: dict) -> str:
+    decision = node['rule']
+    rule = list(decision.keys())[0]
+    left = pretty_var(decision[rule][0])
+    right = pretty_var(decision[rule][1])
+    return f"{str(left)} {rule} {str(right)}"
+
+
 def beautified_operation_node(node: dict) -> str:
     operation = node['operation']
 
@@ -125,7 +139,7 @@ def beautify_nodes(nodes: list) -> list:
         elif node_type == 'action':
             node.update({'content': 'action'})
         elif node_type == 'decision':
-            node.update({'content': 'decision'})
+            node.update({'content': beautified_decision_node(node)})
         elif node_type == 'card':
             node.update({'content': 'card'})
         elif node_type == 'customCardCollection':
