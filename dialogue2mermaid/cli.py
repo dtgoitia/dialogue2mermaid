@@ -57,8 +57,8 @@ def indexify_node_label_references(nodes: list):
         next_node = node['next']
         if type(next_node) is str:
             for node2 in nodes:
-                if node2.get('label') == next_node:
-                    node.update({'next': node['index']})
+                if node2.get('id') == next_node:
+                    node.update({'next': node2['index']})
                     break
             continue
         if type(next_node) is dict:
@@ -66,11 +66,11 @@ def indexify_node_label_references(nodes: list):
             next_node_fail = next_node['fail']
             if type(next_node_pass) is str:
                 for node2 in nodes:
-                    if node2.get('label') == next_node_pass:
+                    if node2.get('id') == next_node_pass:
                         next_node_pass = node2['index']
             if type(next_node_fail) is str:
                 for node2 in nodes:
-                    if node2.get('label') == next_node_fail:
+                    if node2.get('id') == next_node_fail:
                         next_node_fail = node2['index']
             node.update({'next': {
                 'pass': next_node_pass,
