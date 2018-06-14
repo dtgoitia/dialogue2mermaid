@@ -1,11 +1,9 @@
 from dialogue2mermaid.load import load_dialogue
-from pprint import pprint as print
+# from pprint import pprint as print
 
 
-FALL_THROUGH = 'fallThrough'
 END = -1
 DIALOGUE_STOP = 'dialogue.stop'
-SEPARATOR = "---------------------------------------------------------------------------"
 
 
 def get_dialogue_nodes(dialogue: dict):
@@ -114,10 +112,21 @@ def beautify_nodes(nodes: list) -> list:
     return nodes
 
 
+def get_ref(node: dict) -> str:
+    i = node['index']
+    ref = node['next']
+    if type(ref) == dict:
+        # it's decision node
+        return f"{i} -->|PASS| {ref['pass']}\n{i} -->|FAIL| {ref['fail']}"
+    else:
+        return f"{i} --> {ref}"
+
+
 def stringify_nodes(nodes: list) -> list:
     """
     Convert node data to Mermaid syntax
     """
+    # TODO: sort end nodes not to point to a "-1" node
     result = ""
     for node in nodes:
         i = node['index']
@@ -125,9 +134,8 @@ def stringify_nodes(nodes: list) -> list:
             label = f"{i} @ {node['label']}, {node['type']}"
         else:
             label = f"{i} @ {node['type']}"
-        content = node['content']
-        ref = f"{node['index']} --> {node['next']}"
-        result += f"{i}[\"{label} <br> {content}\"]\n{ref}\n"
+        ref = get_ref(node)
+        result += f"{i}[\"{label} <br> {node['content']}\"]\n{ref}\n"
     return result
 
 
