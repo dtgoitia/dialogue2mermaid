@@ -1,4 +1,5 @@
 UNRECOGNIZED_NODE = '( Ooops, not understood... yet :P )'
+from pprint import pprint
 
 
 def pretty_var(token: any) -> any:
@@ -7,7 +8,6 @@ def pretty_var(token: any) -> any:
 
 
 def beautify_decision(decision: dict) -> str:
-    print(f"beautify_decision:\n{decision}\n\n")
     name = list(decision.keys())[0]
     if name in ('and', 'or'):
         result = [f"({beautify_decision(item)})" for item in decision[name]]
@@ -28,6 +28,7 @@ def method_has_arguments(method: dict) -> bool:
 
 def beautify_method(method: dict) -> str:
     receiver = pretty_var(method[0])
+    beautify_json_logic(method[0])
     name = method[1]
     if name in ('addItem', 'current', 'filter', 'getCount', 'getItem', 'indexOf', 'length', 'removeItem',
                 'sort', 'split', 'updateItem'):
@@ -40,24 +41,49 @@ def beautify_method(method: dict) -> str:
         return UNRECOGNIZED_NODE
 
 
+def beautify_json_logic(json: any) -> str:
+    # TODO
+    # beautify_json_logic is not returning to anything.
+    # See where is beautify_json_logic implemented and move all json logic into here
+
+    # print("beautify_json_logic:")
+    # pprint(json)
+    # print("\n")
+    if type(json) is not dict:
+        return json
+    name = list(json.keys())[0]
+    args = json[name]
+    if name == 'var':
+        var_result = json.get('var') if type(json) == dict else json
+        return "''''" if var_result == "" else var_result
+    elif name in ('+', '-', '*', '/'):
+        result = [str(beautify_json_logic(item)) for item in args]
+        delimiter = f" {name} "
+        result = delimiter.join(result)
+        return f"({result})"
+    elif name in ('>', '<', '>=', '<=', '==', '===', '!=', '!=='):
+        result = [str(beautify_json_logic(item)) for item in args]
+        return f"({result[0]} {name} {result[1]})"
+    elif name == 'if':
+        library = json[name]
+        true = beautify_json_logic(library[1])
+        false = beautify_json_logic(library[2])
+        result = beautify_library(library[0])
+        return f"if {result}:<br>then: {true}<br>else: {false}"
+
+
 def beautify_library(operation: dict) -> str:
     name = list(operation.keys())[0]
     if name in ('+', '-', '*', '/'):
-        p = [str(pretty_var(item)) for item in operation[name]]
-        return f"{p[0]} {name} {p[1]}"
+        return beautify_json_logic(operation)
     elif name in ('>', '<', '>=', '<=', '==', '===', '!=', '!=='):
-        p = [str(pretty_var(item)) for item in operation[name]]
-        return f"({p[0]} {name} {p[1]})"
-    elif name in ('if'):
-        library = operation[name]
-        true = pretty_var(library[1])
-        false = pretty_var(library[2])
-        result = beautify_library(library[0])
-        return f"if ({result})<br>then ({true})<br>else ({false})"
+        return beautify_json_logic(operation)
+    elif name == 'if':
+        return beautify_json_logic(operation)
     elif name in ('and', 'or'):
         return beautify_decision(operation)
     else:
-        p = [str(pretty_var(item)) for item in operation[name]]
+        p = [str(beautify_json_logic(item)) for item in operation[name]]
         p = ', '.join(p)
         return f"{name}({p})"
 
