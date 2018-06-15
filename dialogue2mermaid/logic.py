@@ -2,7 +2,8 @@ UNRECOGNIZED_METHOD = 'UNRECOGNIZED_METHOD'
 
 
 def pretty_var(token: any) -> any:
-    return token.get('var') if type(token) == dict else token
+    result = token.get('var') if type(token) == dict else token
+    return "''''" if result == "" else result
 
 
 def beautify_decision(decision: dict) -> str:
