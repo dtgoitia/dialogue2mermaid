@@ -1,3 +1,6 @@
+import os
+import webbrowser
+import click
 from dialogue2mermaid.load import load_dialogue
 from dialogue2mermaid.logic import beautify_nodes
 from dialogue2mermaid.mermaid import mermaid_to_html
@@ -123,14 +126,26 @@ def nodes_to_mermaid(nodes: list) -> str:
     return stringified_nodes
 
 
-def write_to_file(mermaid: str):
-    with open('output.html', 'w') as file:
+def write_to_file(output_path: str, mermaid: str):
+    with open(output_path, 'w') as file:
         file.write(mermaid_to_html(mermaid))
 
 
-def main():
-    dialogue_path = 'test.jsonc'
-    dialogue = load_dialogue(dialogue_path)
+@click.command()
+@click.option('--input', '-i', default='input.json', help='JSON dialogue relative path')
+@click.option('--output', '-o', default='index.html', help='Output HTML file')
+@click.option('--browser/--no-browser', '-b/-nb', default=False, help='Open output in browser')
+@click.option('--watch/--no-watch', '-w/-nw', default=False, help='Watch input file and reload')
+def main(input, output, watch, browser):
+
+    if watch != 0:
+        print('Watch option is not available yet')
+        return None
+
+    dialogue = load_dialogue(input)
     nodes = get_dialogue_nodes(dialogue)
     mermaid = nodes_to_mermaid(nodes)
-    write_to_file(mermaid)
+    write_to_file(output, mermaid)
+
+    if browser:
+        webbrowser.open(f"file://{os.path.realpath(output)}", new=2)
