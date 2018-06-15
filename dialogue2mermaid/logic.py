@@ -1,4 +1,4 @@
-UNRECOGNIZED_METHOD = 'UNRECOGNIZED_METHOD'
+UNRECOGNIZED_NODE = '( Ooops, not understood... yet :P )'
 
 
 def pretty_var(token: any) -> any:
@@ -7,9 +7,10 @@ def pretty_var(token: any) -> any:
 
 
 def beautify_decision(decision: dict) -> str:
+    print(f"beautify_decision:\n{decision}\n\n")
     name = list(decision.keys())[0]
     if name in ('and', 'or'):
-        result = [beautify_decision(item) for item in decision[name]]
+        result = [f"({beautify_decision(item)})" for item in decision[name]]
         return f" {name} ".join(result)
     left = pretty_var(decision[name][0])
     right = pretty_var(decision[name][1])
@@ -36,7 +37,7 @@ def beautify_method(method: dict) -> str:
         else:
             return f"{receiver}.{name}()"
     else:
-        return UNRECOGNIZED_METHOD
+        return UNRECOGNIZED_NODE
 
 
 def beautify_library(operation: dict) -> str:
@@ -47,6 +48,14 @@ def beautify_library(operation: dict) -> str:
     elif name in ('>', '<', '>=', '<=', '==', '===', '!=', '!=='):
         p = [str(pretty_var(item)) for item in operation[name]]
         return f"({p[0]} {name} {p[1]})"
+    elif name in ('if'):
+        library = operation[name]
+        true = pretty_var(library[1])
+        false = pretty_var(library[2])
+        result = beautify_library(library[0])
+        return f"if ({result})<br>then ({true})<br>else ({false})"
+    elif name in ('and', 'or'):
+        return beautify_decision(operation)
     else:
         p = [str(pretty_var(item)) for item in operation[name]]
         p = ', '.join(p)
@@ -90,5 +99,5 @@ def beautify_nodes(nodes: list) -> list:
         elif node_type == 'customCardCollection':
             node.update({'content': 'customCardCollection'})
         else:
-            node.update({'content': 'NOT UNDERSTOOD'})
+            node.update({'content': UNRECOGNIZED_NODE})
     return nodes
