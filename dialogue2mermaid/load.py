@@ -3,7 +3,7 @@ import re
 
 
 def remove_comments(src: str) -> str:
-    comment_regex_pattern = re.compile('\s*\/\/[^\\n]*\\n')
+    comment_regex_pattern = re.compile('\s*[^:]\/\/[^\\n]*\\n')
     return re.sub(comment_regex_pattern, '', src)
 
 
