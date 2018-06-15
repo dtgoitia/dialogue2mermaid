@@ -34,3 +34,4 @@
   - [x] Open output in browser
   - [ ] Watch input file
 - [ ] Support `passNode` and `failNodeIndex`
+- [ ] Grey out nodes with `"skip": true`
