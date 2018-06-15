@@ -17,7 +17,7 @@ def method_has_arguments(method: dict) -> bool:
     return True if len(method) > 2 else False
 
 
-def beutify_method(method: dict):
+def beautify_method(method: dict) -> str:
     receiver = pretty_var(method[0])
     name = method[1]
     if name in ('addItem', 'current', 'filter', 'getCount', 'getItem', 'indexOf', 'length', 'removeItem', 'sort', 'split', 'updateItem'):
@@ -30,6 +30,20 @@ def beutify_method(method: dict):
         return UNRECOGNIZED_METHOD
 
 
+def beautify_library(operation: dict) -> str:
+    name = list(operation.keys())[0]
+    if name in ('+', '-', '*', '/'):
+        p = [str(pretty_var(item)) for item in operation[name]]
+        return f"{p[0]} {name} {p[1]}"
+    elif name in ('>', '<', '>=', '<=', '==', '===', '!=', '!=='):
+        p = [str(pretty_var(item)) for item in operation[name]]
+        return f"({p[0]} {name} {p[1]})"
+    else:
+        p = [str(pretty_var(item)) for item in operation[name]]
+        p = ', '.join(p)
+        return f"{name}({p})"
+
+
 def beautified_operation_node(node: dict) -> str:
     operation = node['operation']
     result = ''
@@ -38,21 +52,11 @@ def beautified_operation_node(node: dict) -> str:
         result = f"{node['output']} = "
 
     if 'method' in operation:
-        result += beutify_method(operation['method'])
+        result += beautify_method(operation['method'])
     elif 'var' in operation:
         result += f"{operation['var']}"
     else:
-        plugin_name = list(operation.keys())[0]
-        if plugin_name in ('+', '-', '*', '/'):
-            p = [str(pretty_var(item)) for item in operation[plugin_name]]
-            result += f"{p[0]} {plugin_name} {p[1]}"
-        elif plugin_name in ('>', '<', '>=', '<=', '==', '===', '!=', '!=='):
-            p = [str(pretty_var(item)) for item in operation[plugin_name]]
-            result += f"({p[0]} {plugin_name} {p[1]})"
-        else:
-            p = [str(pretty_var(item)) for item in operation[plugin_name]]
-            p = ', '.join(p)
-            result += f"{plugin_name}({p})"
+        result += beautify_library(operation)
 
     return result
 
