@@ -4,3 +4,5 @@
 *.json
 /output.md
 /*.html
+/dist/
+/build/

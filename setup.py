@@ -12,7 +12,9 @@ setup(
     python_requires='>=3.6',
     include_package_data=True,
     zip_safe=False,
-    install_requires=[],    # TODO: Automate extraction from Pipfile?
+    install_requires=[
+        'click'
+    ],
     entry_points={
         "console_scripts": [
             'do=dialogue2mermaid.cli:main'
