@@ -27,8 +27,10 @@
 ## TODO
 - [x] Split `cli.py` file in a more logic structure
 - [x] Prepare script for release.
-- [ ] Allow comments in JSON file
-- [ ] Customize output
-- [ ] Add CLI arguments:
-  - [ ] Source file:
+- [x] Allow comments in JSON file
+- [x] Add CLI arguments:
+  - [x] Input file
+  - [x] Output file
+  - [x] Open output in browser
+  - [ ] Watch input file
 - [ ] Support `passNode` and `failNodeIndex`
