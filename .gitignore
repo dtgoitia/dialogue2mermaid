@@ -3,3 +3,4 @@
 *.jsonc
 *.json
 /output.md
+/*.html

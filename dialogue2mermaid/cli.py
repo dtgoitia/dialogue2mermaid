@@ -1,5 +1,6 @@
 from dialogue2mermaid.load import load_dialogue
 from dialogue2mermaid.logic import beautify_nodes
+from dialogue2mermaid.mermaid import mermaid_to_html
 # from pprint import pprint as print
 
 
@@ -122,12 +123,9 @@ def nodes_to_mermaid(nodes: list) -> str:
     return stringified_nodes
 
 
-def write_to_markdown(mermaid: str):
-    with open('output.md', 'w') as file:
-        file.write('```mermaid {align="center"}\ngraph TB\n')
-        file.write(mermaid)
-        file.write('-1((END))\n')
-        file.write('```\n')
+def write_to_file(mermaid: str):
+    with open('output.html', 'w') as file:
+        file.write(mermaid_to_html(mermaid))
 
 
 def main():
@@ -135,4 +133,4 @@ def main():
     dialogue = load_dialogue(dialogue_path)
     nodes = get_dialogue_nodes(dialogue)
     mermaid = nodes_to_mermaid(nodes)
-    write_to_markdown(mermaid)
+    write_to_file(mermaid)
