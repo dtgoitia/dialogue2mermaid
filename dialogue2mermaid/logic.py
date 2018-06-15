@@ -5,12 +5,19 @@ def pretty_var(token: any) -> any:
     return token.get('var') if type(token) == dict else token
 
 
+def beautify_decision(decision: dict) -> str:
+    name = list(decision.keys())[0]
+    if name in ('and', 'or'):
+        result = [beautify_decision(item) for item in decision[name]]
+        return f" {name} ".join(result)
+    left = pretty_var(decision[name][0])
+    right = pretty_var(decision[name][1])
+    return f"{str(left)} {name} {str(right)}"
+
+
 def beautified_decision_node(node: dict) -> str:
     decision = node['rule']
-    rule = list(decision.keys())[0]
-    left = pretty_var(decision[rule][0])
-    right = pretty_var(decision[rule][1])
-    return f"{str(left)} {rule} {str(right)}"
+    return beautify_decision(decision)
 
 
 def method_has_arguments(method: dict) -> bool:
@@ -20,7 +27,8 @@ def method_has_arguments(method: dict) -> bool:
 def beautify_method(method: dict) -> str:
     receiver = pretty_var(method[0])
     name = method[1]
-    if name in ('addItem', 'current', 'filter', 'getCount', 'getItem', 'indexOf', 'length', 'removeItem', 'sort', 'split', 'updateItem'):
+    if name in ('addItem', 'current', 'filter', 'getCount', 'getItem', 'indexOf', 'length', 'removeItem',
+                'sort', 'split', 'updateItem'):
         if method_has_arguments(method):
             arguments = [pretty_var(arg) for arg in method[2]]
             return f"{receiver}.{name}({', '.join(arguments)})"
