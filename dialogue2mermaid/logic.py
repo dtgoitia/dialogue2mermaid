@@ -1,3 +1,6 @@
+UNRECOGNIZED_METHOD = 'UNRECOGNIZED_METHOD'
+
+
 def pretty_var(token: any) -> any:
     return token.get('var') if type(token) == dict else token
 
@@ -10,6 +13,23 @@ def beautified_decision_node(node: dict) -> str:
     return f"{str(left)} {rule} {str(right)}"
 
 
+def method_has_arguments(method: dict) -> bool:
+    return True if len(method) > 2 else False
+
+
+def beutify_method(method: dict):
+    receiver = pretty_var(method[0])
+    name = method[1]
+    if name in ('addItem', 'current', 'filter', 'getCount', 'getItem', 'indexOf', 'length', 'removeItem', 'sort', 'split', 'updateItem'):
+        if method_has_arguments(method):
+            arguments = [pretty_var(arg) for arg in method[2]]
+            return f"{receiver}.{name}({', '.join(arguments)})"
+        else:
+            return f"{receiver}.{name}()"
+    else:
+        return UNRECOGNIZED_METHOD
+
+
 def beautified_operation_node(node: dict) -> str:
     operation = node['operation']
     result = ''
@@ -18,14 +38,7 @@ def beautified_operation_node(node: dict) -> str:
         result = f"{node['output']} = "
 
     if 'method' in operation:
-        method = operation['method']
-        method_name = method[1]
-        if method_name in ('addItem', 'getItem', 'updateItem'):
-            var = pretty_var(method[0])
-            i = pretty_var(method[2][0])
-            result += f"{var}.{method_name}({i})"
-        else:
-            str(operation['unrecognised method'])
+        result += beutify_method(operation['method'])
     elif 'var' in operation:
         result += f"{operation['var']}"
     else:
