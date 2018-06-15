@@ -30,9 +30,16 @@ def beautified_operation_node(node: dict) -> str:
         result += f"{operation['var']}"
     else:
         plugin_name = list(operation.keys())[0]
-        p = [str(pretty_var(item)) for item in operation[plugin_name]]
-        p = ', '.join(p)
-        result += f"{plugin_name}({p})"
+        if plugin_name in ('+', '-', '*', '/'):
+            p = [str(pretty_var(item)) for item in operation[plugin_name]]
+            result += f"{p[0]} {plugin_name} {p[1]}"
+        elif plugin_name in ('>', '<', '>=', '<=', '==', '===', '!=', '!=='):
+            p = [str(pretty_var(item)) for item in operation[plugin_name]]
+            result += f"({p[0]} {plugin_name} {p[1]})"
+        else:
+            p = [str(pretty_var(item)) for item in operation[plugin_name]]
+            p = ', '.join(p)
+            result += f"{plugin_name}({p})"
 
     return result
 
