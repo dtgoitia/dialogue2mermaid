@@ -1,6 +1,3 @@
-from pprint import pprint
-
-
 UNRECOGNIZED_NODE = '( Ooops, not understood... yet :P )'
 LINE_MAX_LENGTH = 40
 NEW_LINE = '<br>'
