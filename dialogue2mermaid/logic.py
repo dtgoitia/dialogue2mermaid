@@ -162,7 +162,9 @@ def dict_to_string(dictionary: dict, delimiter: str, indentation_level: int) -> 
 def beautify_action_node(node: dict) -> str:
     service = node['service']
     result = ''
-    result += f"{service['method']}  {snip(service['url'])}"
+    if 'method' in service:
+        result += f"{service['method']} "
+    result += snip(service['url'])
     if 'headers' in service:
         result += f"{NEW_LINE}headers:{dict_to_string(service['headers'], ': ', 0)}"
     if 'body' in service:
@@ -241,6 +243,8 @@ def beautify_nodes(nodes: list) -> list:
             node.update({'content': 'customCardCollection'})
         elif node_type == 'decision':
             node.update({'content': beautify_decision_node(node)})
+        elif node_type == 'downloadAction':
+            node.update({'content': beautify_action_node(node)})
         elif node_type == 'event':
             node.update({'content': beautify_event_node(node)})
         elif node_type == 'message':
