@@ -96,6 +96,8 @@ def link_nodes(nodes: list) -> str:
 def get_ref(node: dict) -> str:
     i = node['index']
     ref = node['next']
+    if ref == END:
+        return ''
     if type(ref) == dict:
         # it's decision node
         return f"{i} -->|PASS| {ref['pass']}\n{i} -->|FAIL| {ref['fail']}"
