@@ -19,7 +19,7 @@ def beautify_decision(decision: dict) -> str:
     return f"{str(left)} {name} {str(right)}"
 
 
-def beautified_decision_node(node: dict) -> str:
+def beautify_decision_node(node: dict) -> str:
     decision = node['rule']
     return beautify_decision(decision)
 
@@ -78,7 +78,7 @@ def beautify_library(operation: dict) -> str:
         return f"{name}({p})"
 
 
-def beautified_operation_node(node: dict) -> str:
+def beautify_operation_node(node: dict) -> str:
     operation = node['operation']
     result = ''
 
@@ -159,7 +159,7 @@ def dict_to_string(dictionary: dict, delimiter: str, indentation_level: int) -> 
     return result
 
 
-def beautified_action_node(node: dict) -> str:
+def beautify_action_node(node: dict) -> str:
     service = node['service']
     result = ''
     result += f"{service['method']}  {snip(service['url'])}"
@@ -177,13 +177,17 @@ def beautified_action_node(node: dict) -> str:
     return result
 
 
-def beautified_prompt_node(node: dict) -> str:
+def beautify_prompt_node(node: dict) -> str:
     result = f"{node['output']} = {node['message']}"
     if 'validation' in node:
         result += f"{NEW_LINE}validation: {beautify_json_logic(node['validation'])}"
     if 'contentTypes' in node:
         result += f"{NEW_LINE}contentTypes: {', '.join(node['contentTypes'])}"
     return result
+
+
+def beautify_event_node(node: dict) -> str:
+    return node['event']
 
 
 def beautify_nodes(nodes: list) -> list:
@@ -193,21 +197,23 @@ def beautify_nodes(nodes: list) -> list:
     """
     for node in nodes:
         node_type = node.get('type')
-        if node_type == 'message':
-            node.update({'content': beautify_message_node(node)})
-        elif node_type == 'operation':
-            node.update({'content': beautified_operation_node(node)})
-        elif node_type == 'action':
-            node.update({'content': beautified_action_node(node)})
-        elif node_type == 'decision':
-            node.update({'content': beautified_decision_node(node)})
+        if node_type == 'action':
+            node.update({'content': beautify_action_node(node)})
         elif node_type == 'card':
             node.update({'content': 'card'})
         elif node_type == 'customCardCollection':
             node.update({'content': 'customCardCollection'})
+        elif node_type == 'decision':
+            node.update({'content': beautify_decision_node(node)})
+        elif node_type == 'event':
+            node.update({'content': beautify_event_node(node)})
+        elif node_type == 'message':
+            node.update({'content': beautify_message_node(node)})
+        elif node_type == 'operation':
+            node.update({'content': beautify_operation_node(node)})
         elif node_type in ('stringPrompt', 'numberPrompt', 'confirmationPrompt', 'choicePrompt', 'datePrompt',
                            'timePrompt', 'dateTimePrompt', 'attachmentPrompt'):
-            node.update({'content': beautified_prompt_node(node)})
+            node.update({'content': beautify_prompt_node(node)})
         else:
             node.update({'content': UNRECOGNIZED_NODE})
     return nodes
