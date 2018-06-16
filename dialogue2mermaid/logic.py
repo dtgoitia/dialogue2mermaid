@@ -59,7 +59,7 @@ def beautify_json_logic(json: any) -> str:
         true = beautify_json_logic(library[1])
         false = beautify_json_logic(library[2])
         result = beautify_library(library[0])
-        return f"if {result}:<br>then: {true}<br>else: {false}"
+        return f"if {result}:{NEW_LINE}then: {true}{NEW_LINE}else: {false}"
 
 
 def beautify_library(operation: dict) -> str:
@@ -116,7 +116,7 @@ def split_per_length(string: str) -> list:
     chunks = string.split(' ')
     if len(chunks) == 1:
         return snip(string)
-    return '<br>'.join(join_per_length(chunks))
+    return NEW_LINE.join(join_per_length(chunks))
 
 
 def beautify_message_node(node: dict) -> str:
@@ -164,16 +164,25 @@ def beautified_action_node(node: dict) -> str:
     result = ''
     result += f"{service['method']}  {snip(service['url'])}"
     if 'headers' in service:
-        result += f"<br>headers:{dict_to_string(service['headers'], ': ', 0)}"
+        result += f"{NEW_LINE}headers:{dict_to_string(service['headers'], ': ', 0)}"
     if 'body' in service:
-        result += f"<br>body:{dict_to_string(service['body'], ': ', 0)}"
+        result += f"{NEW_LINE}body:{dict_to_string(service['body'], ': ', 0)}"
     if 'outputs' in node:
-        result += f"<br>OUTPUTS:"
+        result += f"{NEW_LINE}OUTPUTS:"
         outputs = node['outputs']
         if 'header' in outputs:
-            result += f"<br>header:{dict_to_string(outputs['header'], ' = ', 0)}"
+            result += f"{NEW_LINE}header:{dict_to_string(outputs['header'], ' = ', 0)}"
         if 'body' in outputs:
-            result += f"<br>body:{dict_to_string(outputs['body'], ' = ', 0)}"
+            result += f"{NEW_LINE}body:{dict_to_string(outputs['body'], ' = ', 0)}"
+    return result
+
+
+def beautified_prompt_node(node: dict) -> str:
+    result = f"{node['output']} = {node['message']}"
+    if 'validation' in node:
+        result += f"{NEW_LINE}validation: {beautify_json_logic(node['validation'])}"
+    if 'contentTypes' in node:
+        result += f"{NEW_LINE}contentTypes: {', '.join(node['contentTypes'])}"
     return result
 
 
@@ -196,6 +205,9 @@ def beautify_nodes(nodes: list) -> list:
             node.update({'content': 'card'})
         elif node_type == 'customCardCollection':
             node.update({'content': 'customCardCollection'})
+        elif node_type in ('stringPrompt', 'numberPrompt', 'confirmationPrompt', 'choicePrompt', 'datePrompt',
+                           'timePrompt', 'dateTimePrompt', 'attachmentPrompt'):
+            node.update({'content': beautified_prompt_node(node)})
         else:
             node.update({'content': UNRECOGNIZED_NODE})
     return nodes
