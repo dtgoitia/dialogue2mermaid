@@ -190,18 +190,39 @@ def beautify_event_node(node: dict) -> str:
     return node['event']
 
 
+def loop_node_inputs(inputs: dict) -> str:
+    result = f"{NEW_LINE}INPUTS:"
+    for key, value in inputs.items():
+        result += f"{NEW_LINE}{key} → {beautify_json_logic(value)}"
+    return result
+
+
+def loop_node_outputs(outputs: dict) -> str:
+    result = f"{NEW_LINE}OUTPUTS:"
+    for key, value in outputs.items():
+        result += f"{NEW_LINE}{key} ← {beautify_json_logic(value)}"
+    return result
+
+
 def beautify_repeat_dialogue_node(node: dict) -> str:
     result = f"repeat '{node['dialogueId']}'"
     if 'repeatUntil' in node:
         result += f" until {beautify_json_logic(node['repeatUntil'])}"
     if 'inputs' in node:
-        result += f"{NEW_LINE}INPUTS:"
-        for key, value in node['inputs'].items():
-            result += f"{NEW_LINE}{key} > {beautify_json_logic(value)}"
+        result += loop_node_inputs(node['inputs'])
     if 'outputs' in node:
-        result += f"{NEW_LINE}OUTPUTS:"
-        for key, value in node['outputs'].items():
-            result += f"{NEW_LINE}{key} < {beautify_json_logic(value)}"
+        result += loop_node_outputs(node['outputs'])
+    return result
+
+
+def beautify_sequence_dialogue_node(node: dict) -> str:
+    result = f"repeat '{node['dialogueId']}'"
+    if 'listName' in node:
+        result += f"{NEW_LINE}for every {node['inputItem']} in {node['listName']}"
+    if 'inputs' in node:
+        result += loop_node_inputs(node['inputs'])
+    if 'outputs' in node:
+        result += loop_node_outputs(node['outputs'])
     return result
 
 
@@ -228,6 +249,8 @@ def beautify_nodes(nodes: list) -> list:
             node.update({'content': beautify_operation_node(node)})
         elif node_type == 'repeatDialogue':
             node.update({'content': beautify_repeat_dialogue_node(node)})
+        elif node_type == 'sequenceDialogue':
+            node.update({'content': beautify_sequence_dialogue_node(node)})
         elif node_type in ('stringPrompt', 'numberPrompt', 'confirmationPrompt', 'choicePrompt', 'datePrompt',
                            'timePrompt', 'dateTimePrompt', 'attachmentPrompt'):
             node.update({'content': beautify_prompt_node(node)})
