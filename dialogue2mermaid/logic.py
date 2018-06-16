@@ -134,6 +134,32 @@ def beautify_message_node(node: dict) -> str:
     return split_per_length(node['message'])
 
 
+def dict_to_string(d: dict) -> str:
+    return '<br>'.join([f"- {x}: {d[x]}" for x in d])
+
+
+def beautified_action_node(node: dict) -> str:
+    service = node['service']
+    result = ''
+    result += f"{service['method']}  {snip(service['url'])}"
+    if 'headers' in service:
+        result += f"<br>headers:"
+        result += f"<br>{dict_to_string(service['headers'])}:"
+    if 'body' in service:
+        result += f"<br>body:"
+        result += f"<br>{dict_to_string(service['body'])}:"
+    if 'outputs' in node:
+        result += f"<br>OUTPUTS:"
+        outputs = node['outputs']
+        if 'header' in outputs:
+            result += f"<br>header:"
+            result += f"<br>{dict_to_string(outputs['header'])}:"
+        if 'body' in outputs:
+            result += f"<br>body:"
+            result += f"<br>{dict_to_string(outputs['body'])}:"
+    return result
+
+
 def beautify_nodes(nodes: list) -> list:
     """
     Customize each node content and return all nodes.
@@ -146,7 +172,7 @@ def beautify_nodes(nodes: list) -> list:
         elif node_type == 'operation':
             node.update({'content': beautified_operation_node(node)})
         elif node_type == 'action':
-            node.update({'content': 'action'})
+            node.update({'content': beautified_action_node(node)})
         elif node_type == 'decision':
             node.update({'content': beautified_decision_node(node)})
         elif node_type == 'card':
