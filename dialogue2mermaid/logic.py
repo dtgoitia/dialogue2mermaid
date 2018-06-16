@@ -190,6 +190,21 @@ def beautify_event_node(node: dict) -> str:
     return node['event']
 
 
+def beautify_repeat_dialogue_node(node: dict) -> str:
+    result = f"repeat '{node['dialogueId']}'"
+    if 'repeatUntil' in node:
+        result += f" until {beautify_json_logic(node['repeatUntil'])}"
+    if 'inputs' in node:
+        result += f"{NEW_LINE}INPUTS:"
+        for key, value in node['inputs'].items():
+            result += f"{NEW_LINE}{key} > {beautify_json_logic(value)}"
+    if 'outputs' in node:
+        result += f"{NEW_LINE}OUTPUTS:"
+        for key, value in node['outputs'].items():
+            result += f"{NEW_LINE}{key} < {beautify_json_logic(value)}"
+    return result
+
+
 def beautify_nodes(nodes: list) -> list:
     """
     Customize each node content and return all nodes.
@@ -211,6 +226,8 @@ def beautify_nodes(nodes: list) -> list:
             node.update({'content': beautify_message_node(node)})
         elif node_type == 'operation':
             node.update({'content': beautify_operation_node(node)})
+        elif node_type == 'repeatDialogue':
+            node.update({'content': beautify_repeat_dialogue_node(node)})
         elif node_type in ('stringPrompt', 'numberPrompt', 'confirmationPrompt', 'choicePrompt', 'datePrompt',
                            'timePrompt', 'dateTimePrompt', 'attachmentPrompt'):
             node.update({'content': beautify_prompt_node(node)})
