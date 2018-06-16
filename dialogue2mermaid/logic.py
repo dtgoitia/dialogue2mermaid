@@ -1,6 +1,10 @@
-UNRECOGNIZED_NODE = '( Ooops, not understood... yet :P )'
 from pprint import pprint
+
+
+UNRECOGNIZED_NODE = '( Ooops, not understood... yet :P )'
 LINE_MAX_LENGTH = 40
+NEW_LINE = '<br>'
+INDENTATION = '---'
 
 
 def pretty_var(token: any) -> any:
@@ -134,8 +138,40 @@ def beautify_message_node(node: dict) -> str:
     return split_per_length(node['message'])
 
 
-def dict_to_string(d: dict) -> str:
-    return '<br>'.join([f"- {x}: {d[x]}" for x in d])
+def dict_to_string(dictionary: dict, delimiter: str, indentation_level: int) -> str:
+    """
+    Return a dictionary as a string.
+
+    Dictionary example:
+    {
+      "animals": {
+        "a": "elephant",
+        "b": {
+            "b1": "dog",
+            "b2": "cat"
+        }
+      },
+      "human": "Bob"
+    }
+
+    Return:
+    - animals:
+    ---- a: elephant
+    ---- b:
+    ------- b1: dog
+    ------- b2: cat
+    - human: Bob
+    """
+    result = ''
+    for key, value in dictionary.items():
+        if type(value) is dict:
+            ind = indentation_level * INDENTATION
+            result += f"{NEW_LINE}{ind}- {key}:"
+            result += dict_to_string(value, ': ', indentation_level + 1)
+        else:
+            ind = indentation_level * INDENTATION
+            result += f"{NEW_LINE}{ind}- {key}{delimiter}{value}"
+    return result
 
 
 def beautified_action_node(node: dict) -> str:
@@ -143,20 +179,16 @@ def beautified_action_node(node: dict) -> str:
     result = ''
     result += f"{service['method']}  {snip(service['url'])}"
     if 'headers' in service:
-        result += f"<br>headers:"
-        result += f"<br>{dict_to_string(service['headers'])}:"
+        result += f"<br>headers:{dict_to_string(service['headers'], ': ', 0)}"
     if 'body' in service:
-        result += f"<br>body:"
-        result += f"<br>{dict_to_string(service['body'])}:"
+        result += f"<br>body:{dict_to_string(service['body'], ': ', 0)}"
     if 'outputs' in node:
         result += f"<br>OUTPUTS:"
         outputs = node['outputs']
         if 'header' in outputs:
-            result += f"<br>header:"
-            result += f"<br>{dict_to_string(outputs['header'])}:"
+            result += f"<br>header:{dict_to_string(outputs['header'], ' = ', 0)}"
         if 'body' in outputs:
-            result += f"<br>body:"
-            result += f"<br>{dict_to_string(outputs['body'])}:"
+            result += f"<br>body:{dict_to_string(outputs['body'], ' = ', 0)}"
     return result
 
 
