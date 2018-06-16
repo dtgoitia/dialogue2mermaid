@@ -1,5 +1,6 @@
 UNRECOGNIZED_NODE = '( Ooops, not understood... yet :P )'
 from pprint import pprint
+LINE_MAX_LENGTH = 40
 
 
 def pretty_var(token: any) -> any:
@@ -105,6 +106,34 @@ def beautified_operation_node(node: dict) -> str:
     return result
 
 
+def snip(s: str) -> str:
+    return s if len(s) < LINE_MAX_LENGTH else (s[0:LINE_MAX_LENGTH] + '...')
+
+
+def join_per_length(chunks: list) -> list:
+    result = []
+    line = ''
+    for chunk in chunks:
+        if len(chunk) + len(line) <= LINE_MAX_LENGTH:
+            line += chunk + ' '
+            continue
+        result.append(line)
+        line = chunk + ' '
+    result.append(line)
+    return result
+
+
+def split_per_length(string: str) -> list:
+    chunks = string.split(' ')
+    if len(chunks) == 1:
+        return snip(string)
+    return '<br>'.join(join_per_length(chunks))
+
+
+def beautify_message_node(node: dict) -> str:
+    return split_per_length(node['message'])
+
+
 def beautify_nodes(nodes: list) -> list:
     """
     Customize each node content and return all nodes.
@@ -113,7 +142,7 @@ def beautify_nodes(nodes: list) -> list:
     for node in nodes:
         node_type = node.get('type')
         if node_type == 'message':
-            node.update({'content': 'print'})
+            node.update({'content': beautify_message_node(node)})
         elif node_type == 'operation':
             node.update({'content': beautified_operation_node(node)})
         elif node_type == 'action':
