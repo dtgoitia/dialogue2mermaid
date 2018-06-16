@@ -30,29 +30,17 @@ def method_has_arguments(method: dict) -> bool:
 
 def beautify_method(method: dict) -> str:
     receiver = pretty_var(method[0])
-    beautify_json_logic(method[0])
-    name = method[1]
-    if name in ('addItem', 'current', 'filter', 'getCount', 'getItem', 'indexOf', 'length', 'removeItem',
-                'sort', 'split', 'updateItem'):
-        if method_has_arguments(method):
-            arguments = [pretty_var(arg) for arg in method[2]]
-            return f"{receiver}.{name}({', '.join(arguments)})"
-        else:
-            return f"{receiver}.{name}()"
+    method_name = method[1]
+    if method_has_arguments(method):
+        arguments = [beautify_json_logic(arg) for arg in method[2]]
+        return f"{receiver}.{method_name}({', '.join(arguments)})"
     else:
-        return UNRECOGNIZED_NODE
+        return f"{receiver}.{method_name}()"
 
 
 def beautify_json_logic(json: any) -> str:
-    # TODO
-    # beautify_json_logic is not returning to anything.
-    # See where is beautify_json_logic implemented and move all json logic into here
-
-    # print("beautify_json_logic:")
-    # pprint(json)
-    # print("\n")
     if type(json) is not dict:
-        return json
+        return str(json) if type(json) is int else json
     name = list(json.keys())[0]
     args = json[name]
     if name == 'var':
