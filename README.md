@@ -19,10 +19,11 @@
     pipenv run do
     ```
 
-## Other bits and pieces
-* For the time being, the JSON dialogue should be in `test.jsonc`, which should live in the root of the repo.
-* For the time being, the output Markdown file with the Mermaid diagram will be saved to `output.md`.
-* For the time being, use the extension "Markdown Preview Enhanced" (within Visual Studio Code) to render `output.md` and see the diagram.
+7. Take a look to the option by running:
+```
+pipenv run do --help
+```
+
 
 ## TODO
 - [x] Split `cli.py` file in a more logic structure
