@@ -4,18 +4,13 @@ NEW_LINE = '<br>'
 INDENTATION = '---'
 
 
-def pretty_var(token: any) -> any:
-    result = token.get('var') if type(token) == dict else token
-    return "''''" if result == "" else result
-
-
 def beautify_decision(decision: dict) -> str:
     name = list(decision.keys())[0]
     if name in ('and', 'or'):
         result = [f"({beautify_decision(item)})" for item in decision[name]]
         return f" {name} ".join(result)
-    left = pretty_var(decision[name][0])
-    right = pretty_var(decision[name][1])
+    left = beautify_json_logic(decision[name][0])
+    right = beautify_json_logic(decision[name][1])
     return f"{str(left)} {name} {str(right)}"
 
 
@@ -29,7 +24,7 @@ def method_has_arguments(method: dict) -> bool:
 
 
 def beautify_method(method: dict) -> str:
-    receiver = pretty_var(method[0])
+    receiver = beautify_json_logic(method[0])
     method_name = method[1]
     if method_has_arguments(method):
         arguments = [beautify_json_logic(arg) for arg in method[2]]
