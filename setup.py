@@ -17,7 +17,8 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            'do=dialogue2mermaid.cli:main'
+            'do=dialogue2mermaid.cli:main',
+            'dow=dialogue2mermaid.cli:dow',
         ],
     }
 )

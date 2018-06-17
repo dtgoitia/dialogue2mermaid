@@ -1,6 +1,7 @@
 import os
 import webbrowser
 import click
+from json.decoder import JSONDecodeError
 from dialogue2mermaid.load import load_dialogue
 from dialogue2mermaid.logic import beautify_nodes
 from dialogue2mermaid.mermaid import mermaid_to_html
@@ -134,12 +135,23 @@ def write_to_file(output_path: str, mermaid: str):
 
 
 def dialogue_to_mermaid(input: str, output: str, browser: bool):
-    dialogue = load_dialogue(input)
-    nodes = get_dialogue_nodes(dialogue)
-    mermaid = nodes_to_mermaid(nodes)
-    write_to_file(output, mermaid)
-    if browser:
-        webbrowser.open(f"file://{os.path.realpath(output)}", new=2)
+    try:
+        dialogue = load_dialogue(input)
+        nodes = get_dialogue_nodes(dialogue)
+        mermaid = nodes_to_mermaid(nodes)
+        write_to_file(output, mermaid)
+        if browser:
+            webbrowser.open(f"file://{os.path.realpath(output)}", new=2)
+    except JSONDecodeError as identifier:
+        print('Oops! It looks like your JSON is not right...')
+        print(identifier)
+
+
+@click.command()
+@click.argument('input')
+@click.argument('output')
+def dow(input, output):
+    dialogue_to_mermaid(input, output, False)
 
 
 @click.command()
@@ -150,10 +162,10 @@ def dialogue_to_mermaid(input: str, output: str, browser: bool):
 def main(input, output, watch, browser):
 
     if watch != 0:
-        print('Watch option is not available yet')
+        dow_call = f"dow {input} {output}"
         server = Server()
-        server.watch(filepath=input, func=dialogue_to_mermaid(input, output, False))
-        server.serve(root='', open_url_delay=True, liveport=5500)
+        server.watch(filepath=input, func=dow_call)
+        server.serve(root='')
         return None
 
     dialogue_to_mermaid(input, output, browser)
