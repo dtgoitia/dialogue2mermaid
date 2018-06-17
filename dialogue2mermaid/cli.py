@@ -4,7 +4,7 @@ import click
 from dialogue2mermaid.load import load_dialogue
 from dialogue2mermaid.logic import beautify_nodes
 from dialogue2mermaid.mermaid import mermaid_to_html
-# from pprint import pprint as print
+from livereload import Server, shell
 
 
 END = -1
@@ -133,6 +133,15 @@ def write_to_file(output_path: str, mermaid: str):
         file.write(mermaid_to_html(mermaid).encode("utf-8"))
 
 
+def dialogue_to_mermaid(input: str, output: str, browser: bool):
+    dialogue = load_dialogue(input)
+    nodes = get_dialogue_nodes(dialogue)
+    mermaid = nodes_to_mermaid(nodes)
+    write_to_file(output, mermaid)
+    if browser:
+        webbrowser.open(f"file://{os.path.realpath(output)}", new=2)
+
+
 @click.command()
 @click.option('--input', '-i', default='input.json', help='JSON dialogue relative path')
 @click.option('--output', '-o', default='index.html', help='Output HTML file')
@@ -142,12 +151,9 @@ def main(input, output, watch, browser):
 
     if watch != 0:
         print('Watch option is not available yet')
+        server = Server()
+        server.watch(filepath=input, func=dialogue_to_mermaid(input, output, False))
+        server.serve(root='', open_url_delay=True, liveport=5500)
         return None
 
-    dialogue = load_dialogue(input)
-    nodes = get_dialogue_nodes(dialogue)
-    mermaid = nodes_to_mermaid(nodes)
-    write_to_file(output, mermaid)
-
-    if browser:
-        webbrowser.open(f"file://{os.path.realpath(output)}", new=2)
+    dialogue_to_mermaid(input, output, browser)
