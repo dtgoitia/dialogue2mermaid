@@ -1,21 +1,15 @@
-HTML_1 = """<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="mermaid.min.css">
-  </head>
-  <body>
+from bs4 import BeautifulSoup
 
-    <div class="mermaid">
-"""
-
-HTML_2 = """    </div>
-    <script src="mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
-  </body>
-</html>
-"""
+TEMPLATE_FILE_PATH = 'template.html'
 
 
 def mermaid_to_html(mermaid: str) -> str:
-    return f"{HTML_1}graph TB\n{mermaid}\n{HTML_2}"
+    template = ''
+    with open(TEMPLATE_FILE_PATH, 'r') as template_file:
+        template += template_file.read()
+    soup = BeautifulSoup(template, 'html.parser')
+    mermaid_container = soup.find('div', {'class': 'mermaid'})
+    if mermaid_container is None:
+        raise TypeError(f"mermaid' class <div> tag not found in '{TEMPLATE_FILE_PATH}'")
+    mermaid_container.string = f"graph TB\n{mermaid}"
+    return str(soup)
