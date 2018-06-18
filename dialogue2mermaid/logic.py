@@ -231,28 +231,26 @@ def beautify_nodes(nodes: list) -> list:
     for node in nodes:
         node_type = node.get('type')
         if node_type == 'action':
-            node.update({'content': beautify_action_node(node)})
-        elif node_type == 'card':
-            node.update({'content': 'card'})
-        elif node_type == 'customCardCollection':
-            node.update({'content': 'customCardCollection'})
+            node.update({'content': beautify_action_node(node), 'shape': 'square'})
+        elif node_type in ('card', 'cardCollection', 'customCardCollection'):
+            node.update({'content': 'card', 'shape': 'asymetric'})
         elif node_type == 'decision':
-            node.update({'content': beautify_decision_node(node)})
+            node.update({'content': beautify_decision_node(node), 'shape': 'rhombus'})
         elif node_type == 'downloadAction':
-            node.update({'content': beautify_action_node(node)})
+            node.update({'content': beautify_action_node(node), 'shape': 'square'})
         elif node_type == 'event':
-            node.update({'content': beautify_event_node(node)})
+            node.update({'content': beautify_event_node(node), 'shape': 'square'})
         elif node_type == 'message':
-            node.update({'content': beautify_message_node(node)})
+            node.update({'content': beautify_message_node(node), 'shape': 'round'})
         elif node_type == 'operation':
-            node.update({'content': beautify_operation_node(node)})
+            node.update({'content': beautify_operation_node(node), 'shape': 'square'})
         elif node_type == 'repeatDialogue':
-            node.update({'content': beautify_repeat_dialogue_node(node)})
+            node.update({'content': beautify_repeat_dialogue_node(node), 'shape': 'square'})
         elif node_type == 'sequenceDialogue':
-            node.update({'content': beautify_sequence_dialogue_node(node)})
+            node.update({'content': beautify_sequence_dialogue_node(node), 'shape': 'square'})
         elif node_type in ('stringPrompt', 'numberPrompt', 'confirmationPrompt', 'choicePrompt', 'datePrompt',
                            'timePrompt', 'dateTimePrompt', 'attachmentPrompt'):
-            node.update({'content': beautify_prompt_node(node)})
+            node.update({'content': beautify_prompt_node(node), 'shape': 'square'})
         else:
-            node.update({'content': UNRECOGNIZED_NODE})
+            node.update({'content': UNRECOGNIZED_NODE, 'shape': 'square'})
     return nodes

@@ -105,6 +105,24 @@ def get_ref(node: dict) -> str:
         return f"{i} --> {ref}"
 
 
+def get_shape_delimiters(shape: str) -> tuple:
+    if shape == 'asymetric':
+        return ('>', ']')
+    if shape == 'circle':
+        return ('((', '))')
+    if shape == 'rhombus':
+        return ('{', '}')
+    if shape == 'round':
+        return ('(', ')')
+    return ('[', ']')
+
+
+def stringify_node_label(node: dict) -> str:
+    if 'label' in node:
+        return f"{node['index']} @ {node['label']}, {node['type']}"
+    return f"{node['index']} @ {node['type']}"
+
+
 def stringify_nodes(nodes: list) -> list:
     """
     Convert node data to Mermaid syntax
@@ -112,12 +130,10 @@ def stringify_nodes(nodes: list) -> list:
     result = ""
     for node in nodes:
         i = node['index']
-        if 'label' in node:
-            label = f"{i} @ {node['label']}, {node['type']}"
-        else:
-            label = f"{i} @ {node['type']}"
+        label = stringify_node_label(node)
+        shape = get_shape_delimiters(node['shape'])
         ref = get_ref(node)
-        result += f"{i}[\"{label} <br> {node['content']}\"]\n{ref}\n"
+        result += f"{i}{shape[0]}\"{label} <br> {node['content']}\"{shape[1]}\n{ref}\n"
     return result
 
 
