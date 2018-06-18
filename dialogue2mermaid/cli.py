@@ -5,7 +5,7 @@ from json.decoder import JSONDecodeError
 from dialogue2mermaid.load import load_dialogue
 from dialogue2mermaid.logic import beautify_nodes
 from dialogue2mermaid.mermaid import mermaid_to_html
-from livereload import Server, shell
+from livereload import Server
 
 
 END = -1
