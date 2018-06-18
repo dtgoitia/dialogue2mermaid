@@ -25,7 +25,25 @@ pipenv run do --help
 ```
 
 
+
+## Help
+
+```
+$ pipenv run do --help
+Usage: do [OPTIONS]
+
+Options:
+  -i, --input TEXT                JSON dialogue relative path
+  -o, --output TEXT               Output HTML file
+  -b, --browser / -nb, --no-browser
+                                  Open output in browser
+  -w, --watch / -nw, --no-watch   Watch input file and reload
+  --help                          Show this message and exit.
+```
+
+
 ## TODO
+
 - [x] Split `cli.py` file in a more logic structure
 - [x] Prepare script for release.
 - [x] Allow comments in JSON file
