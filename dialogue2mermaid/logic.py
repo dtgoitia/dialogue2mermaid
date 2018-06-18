@@ -115,7 +115,7 @@ def split_per_length(string: str) -> list:
 
 
 def beautify_message_node(node: dict) -> str:
-    return split_per_length(node['message'])
+    return split_per_length(node['message']).replace('\"', "''")
 
 
 def dict_to_string(dictionary: dict, delimiter: str, indentation_level: int) -> str:
