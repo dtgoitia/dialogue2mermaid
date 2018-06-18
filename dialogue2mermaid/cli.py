@@ -129,8 +129,8 @@ def nodes_to_mermaid(nodes: list) -> str:
 
 
 def write_to_file(output_path: str, mermaid: str):
-    with open(output_path, 'w') as file:
-        file.write(mermaid_to_html(mermaid))
+    with open(output_path, 'wb') as file:
+        file.write(mermaid_to_html(mermaid).encode("utf-8"))
 
 
 @click.command()
