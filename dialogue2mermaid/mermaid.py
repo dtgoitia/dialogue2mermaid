@@ -42,7 +42,7 @@ HTML_2 = """
 	<footer class="text-muted">
       <div class="container">
       	<hr />
-        <p>&copy; 2018 - <a href="#">Project - Node Flow</a></p>
+        <p>&copy; Software Imaging - 2018 - <a href="#">Project - Node Flow</a></p>
       </div>
     </footer>
 
