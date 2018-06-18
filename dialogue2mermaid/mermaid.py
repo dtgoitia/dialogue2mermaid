@@ -62,4 +62,4 @@ HTML_2 = """
 
 
 def mermaid_to_html(mermaid: str) -> str:
-    return HTML_1 + 'graph TB\n' + mermaid + '-1((END))\n' + HTML_2
+    return f"{HTML_1}graph TB\n{mermaid}\n{HTML_2}"
